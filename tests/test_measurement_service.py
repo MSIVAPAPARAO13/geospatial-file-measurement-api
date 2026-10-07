@@ -123,7 +123,7 @@ def test_dataset_measurements_fault_tolerance():
     gdf = gpd.GeoDataFrame(
         {"id": [1, 2, 3, 4]},
         geometry=[valid_poly, valid_line, point, invalid_poly],
-        crs="EPSG:32633",
+        crs="EPSG:32644",
     )
 
     results = MeasurementService.calculate_dataset_measurements(gdf)

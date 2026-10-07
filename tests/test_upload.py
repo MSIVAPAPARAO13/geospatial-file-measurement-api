@@ -61,7 +61,7 @@ def test_valid_kml_upload_creates_db_record_and_file(test_setup, tmp_path):
     client, upload_dir, SessionLocal = test_setup
 
     kml_path = tmp_path / "valid_test.kml"
-    gdf = gpd.GeoDataFrame({"name": ["P1"]}, geometry=[Point(12.49, 41.89)], crs="EPSG:4326")
+    gdf = gpd.GeoDataFrame({"name": ["P1"]}, geometry=[Point(78.4867, 17.3850)], crs="EPSG:4326")
     gdf.to_file(kml_path, driver="KML", engine="pyogrio")
     kml_content = kml_path.read_bytes()
 
@@ -96,7 +96,7 @@ def test_valid_zip_shapefile_upload(test_setup, tmp_path):
     shp_dir.mkdir(parents=True, exist_ok=True)
     shp_path = shp_dir / "cadastral.shp"
 
-    gdf = gpd.GeoDataFrame({"id": [1]}, geometry=[Polygon([(0, 0), (10, 0), (10, 10), (0, 10), (0, 0)])], crs="EPSG:32633")
+    gdf = gpd.GeoDataFrame({"id": [1]}, geometry=[Polygon([(0, 0), (10, 0), (10, 10), (0, 10), (0, 0)])], crs="EPSG:32644")
     gdf.to_file(shp_path, engine="pyogrio")
 
     zip_buffer = io.BytesIO()

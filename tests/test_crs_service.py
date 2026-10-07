@@ -11,13 +11,13 @@ from app.services.crs_service import (
 
 @pytest.fixture
 def geographic_epsg4326_gdf() -> gpd.GeoDataFrame:
-    """Geographic dataset (EPSG:4326) with Point, LineString, and Polygon in Rome, Italy."""
+    """Geographic dataset (EPSG:4326) with Point, LineString, and Polygon in Hyderabad, India."""
     return gpd.GeoDataFrame(
         {"id": [1, 2, 3], "label": ["Point", "Line", "Polygon"]},
         geometry=[
-            Point(12.4924, 41.8902),
-            LineString([(12.4924, 41.8902), (12.4930, 41.8910)]),
-            Polygon([(12.4920, 41.8900), (12.4940, 41.8900), (12.4940, 41.8920), (12.4920, 41.8920), (12.4920, 41.8900)]),
+            Point(78.4867, 17.3850),
+            LineString([(78.4867, 17.3850), (78.4877, 17.3860)]),
+            Polygon([(78.4860, 17.3840), (78.4880, 17.3840), (78.4880, 17.3860), (78.4860, 17.3860), (78.4860, 17.3840)]),
         ],
         crs="EPSG:4326",
     )
@@ -50,7 +50,7 @@ def test_geographic_epsg4326_transforms_to_projected_utm(geographic_epsg4326_gdf
     assert isinstance(result, CRSReprojectionResult)
     assert result.is_reprojected is True
     assert "4326" in result.source_crs
-    assert "32633" in result.target_crs  # UTM Zone 33N for Rome coordinates
+    assert "32644" in result.target_crs  # UTM Zone 44N for Hyderabad coordinates
     assert result.transformed_gdf.crs.is_projected is True
 
 
@@ -78,7 +78,7 @@ def test_original_crs_preserved_separately_from_target(geographic_epsg4326_gdf):
 
     assert result.source_crs != result.target_crs
     assert "4326" in result.source_crs
-    assert "326" in result.target_crs
+    assert "32644" in result.target_crs
 
 
 def test_transformed_coordinates_differ_from_geographic(geographic_epsg4326_gdf):
@@ -87,9 +87,9 @@ def test_transformed_coordinates_differ_from_geographic(geographic_epsg4326_gdf)
     result = CRSService.prepare_for_measurement(geographic_epsg4326_gdf)
     proj_geom = result.transformed_gdf.geometry.iloc[0]
 
-    # Geographic: (12.4924, 41.8902)
+    # Geographic: (78.4867, 17.3850)
     assert abs(orig_geom.x) < 180 and abs(orig_geom.y) < 90
-    # Projected UTM: (~291962, ~4640626)
+    # Projected UTM: (~233150, ~1924150)
     assert abs(proj_geom.x) > 10000 and abs(proj_geom.y) > 100000
 
 

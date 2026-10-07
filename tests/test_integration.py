@@ -57,17 +57,17 @@ def test_e2e_kml_upload_processing_and_get_endpoints(integration_client, tmp_pat
     """Verify uploading a valid EPSG:4326 KML processes automatically and populates GET endpoints."""
     client, SessionLocal = integration_client
 
-    # Create real KML dataset with Point, LineString, and Polygon
+    # Create real KML dataset with Point, LineString, and Polygon (Hyderabad, India)
     kml_file = tmp_path / "survey_city.kml"
     gdf = gpd.GeoDataFrame(
         {
-            "name": ["Rome Point", "Rome Street", "Rome Park"],
-            "description": ["Center", "Via Appia", "Villa Borghese"],
+            "name": ["Survey Point", "Transit Corridor", "Urban Park"],
+            "description": ["Hyderabad Station", "Outer Ring Road", "Public Garden"],
         },
         geometry=[
-            Point(12.4924, 41.8902),
-            LineString([(12.4924, 41.8902), (12.4930, 41.8910)]),
-            Polygon([(12.4920, 41.8900), (12.4940, 41.8900), (12.4940, 41.8920), (12.4920, 41.8920), (12.4920, 41.8900)]),
+            Point(78.4867, 17.3850),
+            LineString([(78.4867, 17.3850), (78.4877, 17.3860)]),
+            Polygon([(78.4860, 17.3840), (78.4880, 17.3840), (78.4880, 17.3860), (78.4860, 17.3860), (78.4860, 17.3840)]),
         ],
         crs="EPSG:4326",
     )
@@ -125,7 +125,7 @@ def test_e2e_shapefile_zip_upload_and_measurement(integration_client, tmp_path):
     """Verify uploading a projected Shapefile ZIP archive calculates correct metric measurements."""
     client, _ = integration_client
 
-    # Create real projected Shapefile (EPSG:32633 UTM 33N)
+    # Create real projected Shapefile (EPSG:32644 UTM 44N)
     shp_dir = tmp_path / "cadastral_shp"
     shp_dir.mkdir(parents=True, exist_ok=True)
     shp_path = shp_dir / "plots.shp"
@@ -133,7 +133,7 @@ def test_e2e_shapefile_zip_upload_and_measurement(integration_client, tmp_path):
     gdf = gpd.GeoDataFrame(
         {"plot_name": ["Plot 101"]},
         geometry=[Polygon([(500000, 4000000), (500010, 4000000), (500010, 4000010), (500000, 4000010), (500000, 4000000)])],
-        crs="EPSG:32633",
+        crs="EPSG:32644",
     )
     gdf.to_file(shp_path, engine="pyogrio")
 
@@ -174,7 +174,7 @@ def test_partial_feature_failure_results_in_completed_with_warnings(integration_
     gdf = gpd.GeoDataFrame(
         {"name": ["Valid Square", "Invalid Bowtie"]},
         geometry=[valid_poly, invalid_poly],
-        crs="EPSG:32633",
+        crs="EPSG:32644",
     )
     gdf.to_file(kml_file, driver="KML", engine="pyogrio")
 
@@ -247,7 +247,7 @@ def test_repeated_duplicate_uploads_isolated(integration_client, tmp_path):
     kml_file = tmp_path / "repeated.kml"
     gdf = gpd.GeoDataFrame(
         {"name": ["Station A"]},
-        geometry=[Point(12.4924, 41.8902)],
+        geometry=[Point(78.4867, 17.3850)],
         crs="EPSG:4326",
     )
     gdf.to_file(kml_file, driver="KML", engine="pyogrio")
@@ -290,7 +290,7 @@ def test_large_feature_dataset_processing(integration_client, tmp_path):
         polygons.append(poly)
         names.append(f"Parcel {i}")
 
-    gdf = gpd.GeoDataFrame({"name": names}, geometry=polygons, crs="EPSG:32633")
+    gdf = gpd.GeoDataFrame({"name": names}, geometry=polygons, crs="EPSG:32644")
     shp_dir = tmp_path / "large_shp"
     shp_dir.mkdir(parents=True, exist_ok=True)
     shp_path = shp_dir / "parcels.shp"

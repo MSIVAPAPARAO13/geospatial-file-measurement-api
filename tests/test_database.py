@@ -64,7 +64,7 @@ def test_create_feature_measurement(db_session):
         filename="survey.zip",
         file_type=FileType.SHAPEFILE.value,
         file_path="/uploads/survey.zip",
-        crs="EPSG:32633",
+        crs="EPSG:32644",
         status=FileStatus.COMPLETED.value,
     )
     db_session.add(file_record)

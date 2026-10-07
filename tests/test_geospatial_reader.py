@@ -21,9 +21,9 @@ def sample_kml_file(tmp_path) -> Path:
             "description": ["Marker 1", "Path 1", "Zone 1"],
         },
         geometry=[
-            Point(12.4924, 41.8902),
-            LineString([(12.4924, 41.8902), (12.4930, 41.8910)]),
-            Polygon([(12.4920, 41.8900), (12.4940, 41.8900), (12.4940, 41.8920), (12.4920, 41.8920), (12.4920, 41.8900)]),
+            Point(78.4867, 17.3850),
+            LineString([(78.4867, 17.3850), (78.4877, 17.3860)]),
+            Polygon([(78.4860, 17.3840), (78.4880, 17.3840), (78.4880, 17.3860), (78.4860, 17.3860), (78.4860, 17.3840)]),
         ],
         crs="EPSG:4326",
     )
@@ -44,7 +44,7 @@ def sample_shapefile_dir(tmp_path) -> Path:
             Polygon([(500000, 4000000), (501000, 4000000), (501000, 4001000), (500000, 4001000), (500000, 4000000)]),
             Polygon([(502000, 4000000), (503000, 4000000), (503000, 4001000), (502000, 4001000), (502000, 4000000)]),
         ],
-        crs="EPSG:32633",
+        crs="EPSG:32644",
     )
     gdf.to_file(shp_path, engine="pyogrio")
     return shp_dir
@@ -93,13 +93,13 @@ def test_read_kml_preserves_crs_and_attributes(sample_kml_file):
 
 
 def test_read_shapefile_returns_geodataframe_with_projected_crs(sample_shapefile_dir):
-    """Verify reading Shapefile returns GeoDataFrame with projected CRS EPSG:32633."""
+    """Verify reading Shapefile returns GeoDataFrame with projected CRS EPSG:32644."""
     gdf = GeospatialService.read_geospatial_file(sample_shapefile_dir, "shapefile")
 
     assert isinstance(gdf, gpd.GeoDataFrame)
     assert len(gdf) == 2
     assert gdf.crs is not None
-    assert "32633" in str(gdf.crs)
+    assert "32644" in str(gdf.crs)
 
     features = GeospatialService.extract_features_metadata(gdf)
     assert len(features) == 2

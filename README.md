@@ -209,8 +209,8 @@ When a user submits a geospatial file, the following pipeline executes:
 Accurate spatial measurement requires working in a metric Cartesian coordinate space:
 
 - **Missing CRS Rejection**: If an uploaded dataset does not specify a coordinate system (e.g., a Shapefile missing a `.prj` file), the API **never guesses** EPSG:4326. Guessing coordinates can lead to severe spatial distortion or incorrect measurements. Instead, a `MissingCRSError` is raised, setting the file status to `FAILED`.
-- **Existing Projected CRS**: If a dataset is already projected (such as `EPSG:32633` or `EPSG:3857`), the coordinate system and units are preserved.
-- **Geographic CRS Reprojection**: For geographic coordinate systems expressed in angular degrees (such as WGS 84 / `EPSG:4326`), calculating planar area or length directly produces distorted, unitless numbers (`degrees` or `degrees²`). The service calculates the bounding center of the dataset and reprojects the geometries into the corresponding local Universal Transverse Mercator (UTM) zone (e.g., `WGS 84 / UTM Zone 33N`).
+- **Existing Projected CRS**: If a dataset is already projected (such as `EPSG:32644` or `EPSG:3857`), the coordinate system and units are preserved.
+- **Geographic CRS Reprojection**: For geographic coordinate systems expressed in angular degrees (such as WGS 84 / `EPSG:4326`), calculating planar area or length directly produces distorted, unitless numbers (`degrees` or `degrees²`). The service calculates the bounding center of the dataset and reprojects the geometries into the corresponding local Universal Transverse Mercator (UTM) zone (e.g., `WGS 84 / UTM Zone 44N / EPSG:32644` for the Hyderabad region).
 - **Separation of Concerns**: The source CRS is stored on the `UploadedFile` record, ensuring clients know the original datum of the uploaded data.
 
 ---
@@ -392,14 +392,14 @@ curl -X GET "http://127.0.0.1:8000/api/files/a1b2c3d4e5f6/measurements/" \
     {
       "id": 1,
       "feature_id": 0,
-      "source_id": "Station Point",
+      "source_id": "Survey Point",
       "geometry_type": "Point",
       "geometry": {
         "type": "Point",
-        "coordinates": [291962.3, 4640626.8]
+        "coordinates": [233150.2, 1924150.1]
       },
       "properties": {
-        "Name": "Station Point"
+        "Name": "Survey Point"
       },
       "measurement_type": null,
       "measurement_value": null,
@@ -410,17 +410,17 @@ curl -X GET "http://127.0.0.1:8000/api/files/a1b2c3d4e5f6/measurements/" \
     {
       "id": 2,
       "feature_id": 1,
-      "source_id": "Main Road",
+      "source_id": "Transit Corridor",
       "geometry_type": "LineString",
       "geometry": {
         "type": "LineString",
-        "coordinates": [[291962.3, 4640626.8], [292015.4, 4640715.2]]
+        "coordinates": [[233150.2, 1924150.1], [233256.4, 1924255.8]]
       },
       "properties": {
-        "Name": "Main Road"
+        "Name": "Transit Corridor"
       },
       "measurement_type": "length",
-      "measurement_value": 103.4512,
+      "measurement_value": 101.872,
       "measurement_unit": "meters",
       "status": "MEASURED",
       "message": null
@@ -428,17 +428,17 @@ curl -X GET "http://127.0.0.1:8000/api/files/a1b2c3d4e5f6/measurements/" \
     {
       "id": 3,
       "feature_id": 2,
-      "source_id": "Park Zone",
+      "source_id": "Urban Park",
       "geometry_type": "Polygon",
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[[291930.0, 4640600.0], [292100.0, 4640600.0], [292100.0, 4640800.0], [291930.0, 4640800.0], [291930.0, 4640600.0]]]
+        "coordinates": [[[233080.0, 1924040.0], [233290.0, 1924040.0], [233290.0, 1924260.0], [233080.0, 1924260.0], [233080.0, 1924040.0]]]
       },
       "properties": {
-        "Name": "Park Zone"
+        "Name": "Urban Park"
       },
       "measurement_type": "area",
-      "measurement_value": 34000.0,
+      "measurement_value": 36881.8334,
       "measurement_unit": "sq_m",
       "status": "MEASURED",
       "message": null
@@ -532,7 +532,7 @@ FastAPI provides an interactive OpenAPI Swagger UI:
 
 1. **Synchronous Processing Model**:
    - *Decision*: Processing occurs synchronously inside the upload route before returning the response.
-   - *Rationale*: For standard municipal/surveying KML and Shapefile files (typically < 10,000 features), in-memory spatial processing with PyOgrio and Shapely 2.0 takes under 200 milliseconds. Synchronous execution guarantees that measurements are immediately available to the client upon upload completion without requiring polling loops or external message broker infrastructure for local evaluation.
+   - *Rationale*: For standard municipal/surveying KML and Shapefile files, in-memory spatial processing with PyOgrio and Shapely 2.0 executes rapidly. Synchronous execution guarantees that measurements are immediately available to the client upon upload completion without requiring polling loops or external message broker infrastructure for local evaluation.
 2. **PyOgrio as Primary Vector Driver**:
    - *Decision*: Preferred `pyogrio` over legacy `fiona`.
    - *Rationale*: `pyogrio` provides vectorized C-level GDAL bindings that are significantly faster and natively bundle required GDAL/GEOS binaries across platforms, simplifying Windows and Linux setup.
